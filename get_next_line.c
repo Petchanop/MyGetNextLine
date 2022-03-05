@@ -6,7 +6,7 @@
 /*   By: npiya-is <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 16:55:59 by npiya-is          #+#    #+#             */
-/*   Updated: 2022/03/03 15:02:42 by npiya-is         ###   ########.fr       */
+/*   Updated: 2022/03/05 20:10:03 by npiya-is         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,32 +16,38 @@ void	*ft_memcpy(void *dst, const void *src, size_t len);
 
 size_t ft_strlen(const char *str);
 
-t_file	*read_line(t_file *ptr)
+char	*ft_substr(char const *s, unsigned int start, size_t len);
+
+char	*ft_strjoin(char *s1, char *s2);
+
+t_file	*read_line(t_file *ptr, int fd)
 {
 	size_t	dup;
 	size_t	newline;
 	char	*buff;
+	int	rd;
 
-	dup = 1;
-	newline = 0;
-	if (!ft_strlen(ptr->stream))
+	rd = 1;
+	while (rd)
 	{
-		ptr->stream = NULL;
-		return (ptr);
+		newline = 0;
+		dup = 0;
+		buff = ptr->stream;
+		while (buff[newline] != '\n' && buff[newline])
+		{
+			newline++;
+			dup++;
+		}
+		ptr->newline += newline;
+		ptr->line = ft_strjoin(ptr->line, buff);
+		if (buff[newline] == '\n')
+		{
+			ptr->line = ft_substr(ptr->line, 0, ptr->newline + 2);
+			ptr->stream = ft_substr(ptr->stream, dup, BUFFER_SIZE + 1);
+			return (ptr);
+		}
+		rd = read(fd, ptr->stream, (BUFFER_SIZE));
 	}
-	if (ptr->newline)
-	{
-		ptr->start = ptr->newline;
-		ptr->stream += ptr->start;
-	}
-	buff = ptr->stream;
-	while ((*buff) != '\n' && (*buff))
-	{
-		newline++;
-		buff++;
-		dup++;
-	}
-	ptr->newline = newline + 1;
 	return (ptr);
 }
 
@@ -49,33 +55,21 @@ char	*get_next_line(int fd)
 {
 	int	rd;
 	t_file	*buff;
-	char	*buff_file;
-	char	*line;
 	static t_file	ptr[10000];
 
 	if (ptr[fd].stream == NULL && !ptr[fd].newline)
 	{
-		ptr[fd].start = 0;
 		ptr[fd].newline = 0;
-		buff_file = malloc((4096 + 1) * sizeof(char));
-		rd = read(fd, buff_file, (4097));
-		if (rd)
-			ptr[fd].stream = buff_file;
-		else
-			return (0);
+		ptr[fd].stream =  malloc((BUFFER_SIZE + 1) * sizeof(char));
+		ptr[fd].line =  malloc((1) * sizeof(char));
+		ptr[fd].line[0] = 0;
+		rd = read(fd, ptr[fd].stream, BUFFER_SIZE);
+		ptr[fd].stream[BUFFER_SIZE] = 0;
 	}
-	buff = read_line(&ptr[fd]);
-	line = malloc((buff->newline) * sizeof(char));
-	if (!ft_strlen(buff->stream))
-		line = NULL;
-	else
-	{
-		ft_memcpy(line, buff->stream, buff->newline);
-		line[(buff->newline) - 1] = 0;
-	}
-	return (line);
+	buff = read_line(&ptr[fd], fd);
+	return (buff->line);
 }
-/*
+
 int	main(int argc, char **argv)
 {
 	int	fd;
@@ -91,15 +85,16 @@ int	main(int argc, char **argv)
 			fd = open(argv[i], O_RDONLY);
 			line = get_next_line(fd);
 			j = 0;
-			while (line) //&& j < 15)
+			while (line && j < 1)
 			{
-				printf("%s\n",line);
+			//	printf("%s\n",line);
 				free(line);
 				line = get_next_line(fd);
 				j++;
 			}
+			close(fd);
 			i++;
 		}
 	}
 	return (0);
-}*/
+}
