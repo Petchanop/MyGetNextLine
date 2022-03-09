@@ -6,7 +6,7 @@
 /*   By: npiya-is <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 16:55:59 by npiya-is          #+#    #+#             */
-/*   Updated: 2022/03/05 20:10:03 by npiya-is         ###   ########.fr       */
+/*   Updated: 2022/03/10 02:36:53 by npiya-is         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,67 +14,82 @@
 
 void	*ft_memcpy(void *dst, const void *src, size_t len);
 
-size_t ft_strlen(const char *str);
-
-char	*ft_substr(char const *s, unsigned int start, size_t len);
+size_t	ft_strlen(const char *str);
 
 char	*ft_strjoin(char *s1, char *s2);
 
+char	*ft_freefile(t_file *ptr)
+{
+	if (ptr->stream)
+	{
+		free(ptr->stream);
+		ptr->stream = 0;
+	}
+	ptr->start = 0;
+	ptr->newline = 0;
+	return (0);
+}	
+
 t_file	*read_line(t_file *ptr, int fd)
 {
-	size_t	dup;
 	size_t	newline;
-	char	*buff;
-	int	rd;
+	size_t	i;
+	int		rd;
+	char	*buff_file;
 
 	rd = 1;
+	newline = 0;
+	i = ptr->start;
 	while (rd)
 	{
-		newline = 0;
-		dup = 0;
-		buff = ptr->stream;
-		while (buff[newline] != '\n' && buff[newline])
-		{
+		buff_file = malloc((BUFFER_SIZE + 1) * sizeof(char));
+		rd = read(fd, buff_file, BUFFER_SIZE);
+		buff_file[rd] = 0;
+		ptr->stream = ft_strjoin(ptr->stream, buff_file);
+		while (ptr->stream[i + newline] != '\n' && ptr->stream[i + newline])
 			newline++;
-			dup++;
-		}
-		ptr->newline += newline;
-		ptr->line = ft_strjoin(ptr->line, buff);
-		if (buff[newline] == '\n')
-		{
-			ptr->line = ft_substr(ptr->line, 0, ptr->newline + 2);
-			ptr->stream = ft_substr(ptr->stream, dup, BUFFER_SIZE + 1);
+		ptr->newline = newline;
+		free(buff_file);
+		if ((ptr->stream[i + newline]) == '\n')
 			return (ptr);
-		}
-		rd = read(fd, ptr->stream, (BUFFER_SIZE));
+		if (rd <= 0 && ptr->stream)
+			return (ptr);
 	}
-	return (ptr);
+	return (NULL);
 }
 
 char	*get_next_line(int fd)
 {
-	int	rd;
-	t_file	*buff;
+	t_file			*buff;
 	static t_file	ptr[10000];
+	char			*line;
 
+	if (fd < 0)
+		return (NULL);
 	if (ptr[fd].stream == NULL && !ptr[fd].newline)
 	{
-		ptr[fd].newline = 0;
-		ptr[fd].stream =  malloc((BUFFER_SIZE + 1) * sizeof(char));
-		ptr[fd].line =  malloc((1) * sizeof(char));
-		ptr[fd].line[0] = 0;
-		rd = read(fd, ptr[fd].stream, BUFFER_SIZE);
-		ptr[fd].stream[BUFFER_SIZE] = 0;
+		ptr[fd].stream = malloc(1 * sizeof(char));
+		ptr[fd].stream[0] = 0;
+		ptr[fd].start = 0;
 	}
 	buff = read_line(&ptr[fd], fd);
-	return (buff->line);
+	if (!buff->stream[buff->start])
+		return (ft_freefile(&ptr[fd]));
+	if (buff->stream[buff->start + buff->newline] == '\n')
+		buff->newline++;
+	line = malloc((buff->newline + 1) * sizeof(char));
+	ft_memcpy(line, buff->stream + buff->start, buff->newline + 1);
+	line[buff->newline] = 0;
+	buff->start += (buff->newline);
+	buff->newline = 0;
+	return (line);
 }
-
+/*
 int	main(int argc, char **argv)
 {
-	int	fd;
-	int	i;
-	int	j;
+	int		fd;
+	int		i;
+	int		j;
 	char	*line;
 
 	if (argc > 1)
@@ -85,9 +100,9 @@ int	main(int argc, char **argv)
 			fd = open(argv[i], O_RDONLY);
 			line = get_next_line(fd);
 			j = 0;
-			while (line && j < 1)
+			while (line)// && j < 3)
 			{
-			//	printf("%s\n",line);
+				printf("%s", line);
 				free(line);
 				line = get_next_line(fd);
 				j++;
@@ -97,4 +112,4 @@ int	main(int argc, char **argv)
 		}
 	}
 	return (0);
-}
+}*/
