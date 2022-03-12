@@ -6,7 +6,7 @@
 /*   By: npiya-is <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 16:55:59 by npiya-is          #+#    #+#             */
-/*   Updated: 2022/03/12 20:38:02 by npiya-is         ###   ########.fr       */
+/*   Updated: 2022/03/13 03:01:22 by npiya-is         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,20 +22,35 @@ size_t	ft_strlen(const char *str);
 
 char	*ft_strjoin(char *s1, char *s2);
 
-char	*ft_freefile(t_file *ptr)
+char	*ft_freefile(t_file *ptr, int fd)
 {
 	t_file	*tmp;
+	t_file	*pre;
 
-	tmp = NULL;
-	if (ptr->stream)
-		free(ptr->stream);
-	ptr->fd = 0;
-	ptr->newline = 0;
-	ptr->stream = 0;
-	free(ptr);
-	ptr = tmp;
+	tmp = ptr;
+	pre = ptr;
+	while (tmp->next)
+	{
+		printf("tmp->fd : %d\n", tmp->fd);
+		if (tmp->fd == fd)
+		{
+			if (tmp->stream[0])
+				free(tmp->stream);
+			if (tmp == ptr)
+				ptr = ptr->next;
+			else
+				pre->next = tmp->next;
+			free(tmp);
+			break ;
+		}
+		pre = tmp;
+		tmp = tmp->next;
+	}
+//	if (tmp->stream[0])
+//		free(tmp->stream);
+//	free(ptr);
 	return (0);
-}	
+}
 
 int	ft_check_fd(int fd)
 {
@@ -92,7 +107,7 @@ char	*get_next_line(int fd)
 	buff = ft_getptr(&ptr, fd);
 	buff = read_line(buff, buff->fd);
 	if (!buff->stream[buff->start])
-		return (ft_freefile(buff));
+		return (ft_freefile(buff, fd));
 	if (buff->stream[buff->start + buff->newline] == '\n')
 		buff->newline++;
 	line = malloc((buff->newline + 1) * sizeof(char));
@@ -102,7 +117,7 @@ char	*get_next_line(int fd)
 	buff->newline = 0;
 	return (line);
 }
-
+/*
 int	main(int argc, char **argv)
 {
 	int		fd;
@@ -130,4 +145,4 @@ int	main(int argc, char **argv)
 		}
 	}
 	return (0);
-}
+}*/
