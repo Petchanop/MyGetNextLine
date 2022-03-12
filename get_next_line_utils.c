@@ -6,7 +6,7 @@
 /*   By: npiya-is <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 14:44:18 by npiya-is          #+#    #+#             */
-/*   Updated: 2022/03/10 06:12:05 by npiya-is         ###   ########.fr       */
+/*   Updated: 2022/03/13 02:24:44 by npiya-is         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,22 +73,32 @@ t_file	*ft_createptr(int fd)
 	ptr->stream = malloc(1 * sizeof(char));
 	ptr->stream[0] = 0;
 	ptr->start = 0;
+	ptr->next = NULL;
 	return (ptr);
 }
 
-t_file	*ft_getptr(t_file *ptr, int fd)
+t_file	*ft_getptr(t_file **ptr, int fd)
 {
+	t_file	*tmp;
 	t_file	*new;
-	t_file	*data;
 
-	data = ptr;
-	while (data)
+	tmp = *ptr;
+	if (*ptr)
 	{
-		if (data->fd == fd)
-			return (data);
-		data = data->next;
+		while (tmp)
+		{
+			if (tmp->fd == fd)
+				return (tmp);
+			tmp = tmp->next;
+		}
+		new = ft_createptr(fd);
+		tmp = new;
+		
 	}
-	new = ft_createptr(fd);
-	data = new;
-	return (new);
+	else
+	{
+		new = ft_createptr(fd);
+		*ptr = new;
+	}
+	return (*ptr);
 }
