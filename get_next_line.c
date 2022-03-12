@@ -6,13 +6,13 @@
 /*   By: npiya-is <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 16:55:59 by npiya-is          #+#    #+#             */
-/*   Updated: 2022/03/10 06:11:03 by npiya-is         ###   ########.fr       */
+/*   Updated: 2022/03/12 20:38:02 by npiya-is         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-t_file	*ft_getptr(t_file *ptr, int fd);
+t_file	*ft_getptr(t_file **ptr, int fd);
 
 t_file	*ft_createptr(int fd);
 
@@ -24,18 +24,33 @@ char	*ft_strjoin(char *s1, char *s2);
 
 char	*ft_freefile(t_file *ptr)
 {
+	t_file	*tmp;
+
+	tmp = NULL;
 	if (ptr->stream)
-	{
 		free(ptr->stream);
-		ptr->stream = 0;
-	}
-	ptr->start = 0;
-	ptr->newline = 0;
 	ptr->fd = 0;
+	ptr->newline = 0;
+	ptr->stream = 0;
 	free(ptr);
-	ptr = NULL;
+	ptr = tmp;
 	return (0);
 }	
+
+int	ft_check_fd(int fd)
+{
+	char	*test;
+	int		rd;
+	int		valid;
+
+	valid = 0;
+	test = malloc((BUFFER_SIZE + 1) * sizeof(char));
+	rd = read(fd, test, 0);
+	if (rd < 0)
+		valid = 1;
+	free(test);
+	return (valid);
+}
 
 t_file	*read_line(t_file *ptr, int fd)
 {
@@ -72,11 +87,9 @@ char	*get_next_line(int fd)
 	static t_file	*ptr = NULL;
 	char			*line;
 
-	if (fd < 0)
+	if (ft_check_fd(fd))
 		return (NULL);
-	if (!ptr)
-		ptr = ft_createptr(fd);
-	buff = ft_getptr(ptr, fd);
+	buff = ft_getptr(&ptr, fd);
 	buff = read_line(buff, buff->fd);
 	if (!buff->stream[buff->start])
 		return (ft_freefile(buff));
@@ -89,7 +102,7 @@ char	*get_next_line(int fd)
 	buff->newline = 0;
 	return (line);
 }
-/*
+
 int	main(int argc, char **argv)
 {
 	int		fd;
@@ -100,7 +113,7 @@ int	main(int argc, char **argv)
 	if (argc > 1)
 	{
 		i = 1;
-		while (i < argc)
+		while (i <= argc)
 		{
 			fd = open(argv[i], O_RDONLY);
 			line = get_next_line(fd);
@@ -117,4 +130,4 @@ int	main(int argc, char **argv)
 		}
 	}
 	return (0);
-}*/
+}
