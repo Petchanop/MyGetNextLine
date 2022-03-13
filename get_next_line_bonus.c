@@ -1,20 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_bonus.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: npiya-is <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 16:55:59 by npiya-is          #+#    #+#             */
-/*   Updated: 2022/03/13 05:14:20 by npiya-is         ###   ########.fr       */
+/*   Updated: 2022/03/13 15:43:50 by npiya-is         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
-
-t_file	*ft_getptr(t_file *ptr, int fd);
-
-t_file	*ft_createptr(int fd);
 
 void	*ft_memcpy(void *dst, const void *src, size_t len);
 
@@ -24,8 +20,11 @@ char	*ft_strjoin(char *s1, char *s2);
 
 char	*ft_freefile(t_file *ptr)
 {
-//	if (ptr->stream[0])
+	if (ptr->stream)
+	{
 		free(ptr->stream);
+		ptr->stream = NULL;
+	}
 	return (0);
 }
 
@@ -81,8 +80,15 @@ char	*get_next_line(int fd)
 
 	if (ft_check_fd(fd))
 		return (NULL);
-	buff = ft_getptr(&ptr[fd], fd);
-	buff = read_line(buff, buff->fd);
+	if (!ptr[fd].stream && !ptr[fd].newline)
+	{
+		ptr[fd].stream = malloc(1 * sizeof(char));
+		ptr[fd].stream[0] = 0;
+		ptr[fd].start = 0;
+		ptr[fd].newline = 0;
+		ptr[fd].fd = fd;
+	}
+	buff = read_line(&ptr[fd], ptr[fd].fd);
 	if (!buff->stream[buff->start])
 		return (ft_freefile(buff));
 	if (buff->stream[buff->start + buff->newline] == '\n')
