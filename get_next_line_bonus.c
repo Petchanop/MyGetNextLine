@@ -6,7 +6,7 @@
 /*   By: npiya-is <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 16:55:59 by npiya-is          #+#    #+#             */
-/*   Updated: 2022/03/23 23:41:08 by npiya-is         ###   ########.fr       */
+/*   Updated: 2022/03/24 01:41:09 by npiya-is         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ int	ft_check_fd(int fd)
 
 	valid = 0;
 	test = malloc((BUFFER_SIZE + 1) * sizeof(char));
+	if (!test)
+		return (1);
 	rd = read(fd, test, 0);
 	if (rd < 0)
 		valid = 1;
