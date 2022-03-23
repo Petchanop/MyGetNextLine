@@ -6,7 +6,7 @@
 /*   By: npiya-is <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 14:44:18 by npiya-is          #+#    #+#             */
-/*   Updated: 2022/03/13 02:24:44 by npiya-is         ###   ########.fr       */
+/*   Updated: 2022/03/13 03:59:59 by npiya-is         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ t_file	*ft_createptr(int fd)
 	return (ptr);
 }
 
-t_file	*ft_getptr(t_file **ptr, int fd)
+t_file	*ft_getptr(t_file *ptr, int fd)
 {
 	t_file	*tmp;
 	t_file	*new;
@@ -102,3 +102,4 @@ t_file	*ft_getptr(t_file **ptr, int fd)
 	}
 	return (*ptr);
 }
+
