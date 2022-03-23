@@ -6,7 +6,7 @@
 /*   By: npiya-is <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 16:41:13 by npiya-is          #+#    #+#             */
-/*   Updated: 2022/03/10 06:23:26 by npiya-is         ###   ########.fr       */
+/*   Updated: 2022/03/23 23:21:39 by npiya-is         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,9 @@
 
 typedef struct s_file
 {
-	struct s_file	*next;
 	char			*stream;
 	size_t			start;
 	size_t			newline;
-	int				fd;
 }	t_file;
 
 char	*get_next_line(int fd);

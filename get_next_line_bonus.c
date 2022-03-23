@@ -6,7 +6,7 @@
 /*   By: npiya-is <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 16:55:59 by npiya-is          #+#    #+#             */
-/*   Updated: 2022/03/13 16:26:40 by npiya-is         ###   ########.fr       */
+/*   Updated: 2022/03/23 23:41:08 by npiya-is         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,17 +43,17 @@ int	ft_check_fd(int fd)
 	return (valid);
 }
 
-t_file	*read_line(t_file *ptr, int fd)
+t_file	*read_line(t_file *ptr, int fd, size_t i)
 {
 	size_t	newline;
-	size_t	i;
 	int		rd;
 	char	*buff_file;
 
 	rd = 1;
 	newline = 0;
-	i = ptr->start;
 	buff_file = malloc((BUFFER_SIZE + 1) * sizeof(char));
+	if (!buff_file)
+		return (NULL);
 	while (rd)
 	{
 		rd = read(fd, buff_file, BUFFER_SIZE);
@@ -83,19 +83,19 @@ char	*get_next_line(int fd)
 	if (!ptr[fd].stream && !ptr[fd].newline)
 	{
 		ptr[fd].stream = malloc(1 * sizeof(char));
+		if (!ptr[fd].stream)
+			return (NULL);
 		ptr[fd].stream[0] = 0;
 		ptr[fd].start = 0;
 		ptr[fd].newline = 0;
-		ptr[fd].fd = fd;
 	}
-	buff = read_line(&ptr[fd], ptr[fd].fd);
+	buff = read_line(&ptr[fd], fd, ptr[fd].start);
 	if (!buff->stream[buff->start])
 		return (ft_freefile(buff));
 	if (buff->stream[buff->start + buff->newline] == '\n')
 		buff->newline++;
 	line = malloc((buff->newline + 1) * sizeof(char));
 	ft_memcpy(line, buff->stream + buff->start, buff->newline + 1);
-	line[buff->newline] = 0;
 	buff->start += (buff->newline);
 	buff->newline = 0;
 	return (line);

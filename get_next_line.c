@@ -1,20 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: npiya-is <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 16:55:59 by npiya-is          #+#    #+#             */
-/*   Updated: 2022/03/13 15:37:46 by npiya-is         ###   ########.fr       */
+/*   Updated: 2022/03/23 23:39:06 by npiya-is         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
-
-t_file	*ft_getptr(t_file **ptr, int fd);
-
-t_file	*ft_createptr(int fd);
+#include "get_next_line_bonus.h"
 
 void	*ft_memcpy(void *dst, const void *src, size_t len);
 
@@ -22,33 +18,13 @@ size_t	ft_strlen(const char *str);
 
 char	*ft_strjoin(char *s1, char *s2);
 
-char	*ft_freefile(t_file *ptr, int fd)
+char	*ft_freefile(t_file *ptr)
 {
-	t_file	*tmp;
-	t_file	*pre;
-
-	tmp = ptr;
-	pre = ptr;
-	while (tmp->next)
+	if (ptr->stream)
 	{
-		printf("tmp->fd : %d\n", tmp->fd);
-		if (tmp->fd == fd)
-		{
-			if (tmp->stream[0])
-				free(tmp->stream);
-			if (tmp == ptr)
-				ptr = ptr->next;
-			else
-				pre->next = tmp->next;
-			free(tmp);
-			break ;
-		}
-		pre = tmp;
-		tmp = tmp->next;
+		free(ptr->stream);
+		ptr->stream = NULL;
 	}
-//	if (tmp->stream[0])
-//		free(tmp->stream);
-//	free(ptr);
 	return (0);
 }
 
@@ -60,6 +36,8 @@ int	ft_check_fd(int fd)
 
 	valid = 0;
 	test = malloc((BUFFER_SIZE + 1) * sizeof(char));
+	if (!test)
+		return (1);
 	rd = read(fd, test, 0);
 	if (rd < 0)
 		valid = 1;
@@ -67,17 +45,17 @@ int	ft_check_fd(int fd)
 	return (valid);
 }
 
-t_file	*read_line(t_file *ptr, int fd)
+t_file	*read_line(t_file *ptr, int fd, size_t i)
 {
 	size_t	newline;
-	size_t	i;
 	int		rd;
 	char	*buff_file;
 
 	rd = 1;
 	newline = 0;
-	i = ptr->start;
 	buff_file = malloc((BUFFER_SIZE + 1) * sizeof(char));
+	if (!buff_file)
+		return (NULL);
 	while (rd)
 	{
 		rd = read(fd, buff_file, BUFFER_SIZE);
@@ -99,20 +77,27 @@ t_file	*read_line(t_file *ptr, int fd)
 char	*get_next_line(int fd)
 {
 	t_file			*buff;
-	static t_file	*ptr = NULL;
+	static t_file	ptr[OPEN_MAX + 1];
 	char			*line;
 
 	if (ft_check_fd(fd))
 		return (NULL);
-	buff = ft_getptr(&ptr, fd);
-	buff = read_line(buff, buff->fd);
+	if (!ptr[fd].stream && !ptr[fd].newline)
+	{
+		ptr[fd].stream = malloc(1 * sizeof(char));
+		if (!ptr[fd].stream)
+			return (NULL);
+		ptr[fd].stream[0] = 0;
+		ptr[fd].start = 0;
+		ptr[fd].newline = 0;
+	}
+	buff = read_line(&ptr[fd], fd, ptr[fd].start);
 	if (!buff->stream[buff->start])
-		return (ft_freefile(buff, fd));
+		return (ft_freefile(buff));
 	if (buff->stream[buff->start + buff->newline] == '\n')
 		buff->newline++;
 	line = malloc((buff->newline + 1) * sizeof(char));
 	ft_memcpy(line, buff->stream + buff->start, buff->newline + 1);
-	line[buff->newline] = 0;
 	buff->start += (buff->newline);
 	buff->newline = 0;
 	return (line);

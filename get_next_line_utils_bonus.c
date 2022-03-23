@@ -6,7 +6,7 @@
 /*   By: npiya-is <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 14:44:18 by npiya-is          #+#    #+#             */
-/*   Updated: 2022/03/13 15:33:58 by npiya-is         ###   ########.fr       */
+/*   Updated: 2022/03/23 23:41:27 by npiya-is         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ void	*ft_memcpy(void *dst, const void *src, size_t len)
 		return (NULL);
 	while (len-- && psrc)
 		*pdst++ = *psrc++;
+	*(pdst - 1) = '\0';
 	return (dst);
 }
 

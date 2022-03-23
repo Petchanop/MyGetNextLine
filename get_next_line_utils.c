@@ -6,7 +6,7 @@
 /*   By: npiya-is <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 14:44:18 by npiya-is          #+#    #+#             */
-/*   Updated: 2022/03/13 03:59:59 by npiya-is         ###   ########.fr       */
+/*   Updated: 2022/03/23 23:37:19 by npiya-is         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ void	*ft_memcpy(void *dst, const void *src, size_t len)
 		return (NULL);
 	while (len-- && psrc)
 		*pdst++ = *psrc++;
+	*(pdst - 1) = '\0';
 	return (dst);
 }
 
@@ -63,43 +64,3 @@ char	*ft_strjoin(char *s1, char *s2)
 	free(s1);
 	return (str);
 }
-
-t_file	*ft_createptr(int fd)
-{
-	t_file	*ptr;
-
-	ptr = malloc(sizeof(t_file));
-	ptr->fd = fd;
-	ptr->stream = malloc(1 * sizeof(char));
-	ptr->stream[0] = 0;
-	ptr->start = 0;
-	ptr->next = NULL;
-	return (ptr);
-}
-
-t_file	*ft_getptr(t_file *ptr, int fd)
-{
-	t_file	*tmp;
-	t_file	*new;
-
-	tmp = *ptr;
-	if (*ptr)
-	{
-		while (tmp)
-		{
-			if (tmp->fd == fd)
-				return (tmp);
-			tmp = tmp->next;
-		}
-		new = ft_createptr(fd);
-		tmp = new;
-		
-	}
-	else
-	{
-		new = ft_createptr(fd);
-		*ptr = new;
-	}
-	return (*ptr);
-}
-
