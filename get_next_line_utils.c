@@ -6,7 +6,7 @@
 /*   By: npiya-is <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 14:44:18 by npiya-is          #+#    #+#             */
-/*   Updated: 2022/03/23 23:37:19 by npiya-is         ###   ########.fr       */
+/*   Updated: 2022/03/25 02:54:03 by npiya-is         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,4 +63,10 @@ char	*ft_strjoin(char *s1, char *s2)
 	str[i + ft_strlen(s1)] = '\0';
 	free(s1);
 	return (str);
+}
+
+void	ft_startnline(t_file *ptr)
+{
+	ptr->start += ptr->newline;
+	ptr->newline = 0;
 }

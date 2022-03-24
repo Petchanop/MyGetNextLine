@@ -6,17 +6,19 @@
 /*   By: npiya-is <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 16:55:59 by npiya-is          #+#    #+#             */
-/*   Updated: 2022/03/23 23:39:06 by npiya-is         ###   ########.fr       */
+/*   Updated: 2022/03/25 02:58:26 by npiya-is         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line_bonus.h"
+#include "get_next_line.h"
 
 void	*ft_memcpy(void *dst, const void *src, size_t len);
 
 size_t	ft_strlen(const char *str);
 
 char	*ft_strjoin(char *s1, char *s2);
+
+void	ft_startnline(t_file *ptr);
 
 char	*ft_freefile(t_file *ptr)
 {
@@ -78,7 +80,6 @@ char	*get_next_line(int fd)
 {
 	t_file			*buff;
 	static t_file	ptr[OPEN_MAX + 1];
-	char			*line;
 
 	if (ft_check_fd(fd))
 		return (NULL);
@@ -96,11 +97,12 @@ char	*get_next_line(int fd)
 		return (ft_freefile(buff));
 	if (buff->stream[buff->start + buff->newline] == '\n')
 		buff->newline++;
-	line = malloc((buff->newline + 1) * sizeof(char));
-	ft_memcpy(line, buff->stream + buff->start, buff->newline + 1);
-	buff->start += (buff->newline);
-	buff->newline = 0;
-	return (line);
+	buff->line = malloc((buff->newline + 1) * sizeof(char));
+	if (!buff->line)
+		return (NULL);
+	ft_memcpy(buff->line, buff->stream + buff->start, buff->newline + 1);
+	ft_startnline(buff);
+	return (buff->line);
 }
 /*
 int	main(int argc, char **argv)

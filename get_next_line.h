@@ -6,7 +6,7 @@
 /*   By: npiya-is <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/03 16:41:13 by npiya-is          #+#    #+#             */
-/*   Updated: 2022/03/23 23:21:39 by npiya-is         ###   ########.fr       */
+/*   Updated: 2022/03/25 02:51:19 by npiya-is         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,14 @@
 # include <stdio.h>
 # include <fcntl.h>
 
+# ifndef OPEN_MAX
+#  define OPEN_MAX 256
+# endif
+
 typedef struct s_file
 {
 	char			*stream;
+	char			*line;
 	size_t			start;
 	size_t			newline;
 }	t_file;
