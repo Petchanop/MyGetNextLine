@@ -6,7 +6,7 @@
 /*   By: npiya-is <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 14:44:18 by npiya-is          #+#    #+#             */
-/*   Updated: 2022/08/27 14:42:40 by npiya-is         ###   ########.fr       */
+/*   Updated: 2022/08/27 14:49:46 by npiya-is         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ char	*ft_startnline(t_file *ptr)
 	i = ptr->newline;
 	remaining_str = malloc(((ft_strlen(ptr->stream) - ptr->newline) + 1));
 	if (remaining_str == NULL)
-		return ;
+		return (NULL);
 	while (ptr->stream[i])
 	{
 			remaining_str[j] = ptr->stream[i];
@@ -83,7 +83,8 @@ char	*ft_startnline(t_file *ptr)
 	}
 	remaining_str[j] = '\0';
 	free(ptr->stream);
-	ptr->stream = remaining_str[j];
+	//ptr->stream = remaining_str[j];
 //	ptr->start += ptr->newline;
 	ptr->newline = 0;
+	return (remaining_str);
 }

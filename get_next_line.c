@@ -18,7 +18,7 @@ size_t	ft_strlen(const char *str);
 
 char	*ft_strjoin(char *s1, char *s2);
 
-void	ft_startnline(t_file *ptr);
+char	*ft_startnline(t_file *ptr);
 
 char	*ft_freefile(t_file *ptr)
 {
