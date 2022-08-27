@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
+/*   get_next_line.c                              	:+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: npiya-is <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 16:55:59 by npiya-is          #+#    #+#             */
-/*   Updated: 2022/03/25 02:58:26 by npiya-is         ###   ########.fr       */
+/*   Updated: 2022/03/25 03:29:57 by npiya-is         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ char	*get_next_line(int fd)
 	if (!buff->line)
 		return (NULL);
 	ft_memcpy(buff->line, buff->stream + buff->start, buff->newline + 1);
-	ft_startnline(buff);
+	buff->stream = ft_startnline(buff);
 	return (buff->line);
 }
 /*
